@@ -1,0 +1,546 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Risultati Training - AI Models</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/lucide/0.263.1/umd/lucide.js"></script>
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      color: #333;
+    }
+
+    .main-container {
+      backdrop-filter: blur(10px);
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 20px;
+      margin: 2rem auto;
+      max-width: 1400px;
+      padding: 1.5rem 2rem;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+    }
+
+    .header {
+      text-align: center;
+      margin-bottom: 2.5rem;
+      color: white;
+    }
+
+    .header h1 {
+      font-size: 2.2rem;
+      font-weight: 700;
+      background: linear-gradient(45deg, #fff, #f0f0f0);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 0.5rem;
+    }
+
+    .header p {
+      font-size: 1.1rem;
+      opacity: 0.9;
+    }
+
+    .nav-buttons {
+      display: flex;
+      justify-content: center;
+      gap: 1rem;
+      margin-bottom: 2.5rem;
+    }
+
+    .nav-btn {
+      background: linear-gradient(45deg, #4facfe, #00f2fe);
+      border: none;
+      border-radius: 12px;
+      padding: 0.75rem 1.5rem;
+      color: white;
+      text-decoration: none;
+      font-weight: 500;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      cursor: pointer;
+    }
+
+    .nav-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 25px rgba(79, 172, 254, 0.3);
+      color: white;
+    }
+
+    .nav-btn.secondary {
+      background: linear-gradient(45deg, #43e97b, #38f9d7);
+    }
+
+    .nav-btn.secondary:hover {
+      box-shadow: 0 10px 25px rgba(67, 233, 123, 0.3);
+    }
+
+    .model-section {
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(10px);
+      border-radius: 20px;
+      padding: 2rem;
+      margin-bottom: 2rem;
+      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .model-section::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+    }
+
+    .yolo-section::before {
+      background: linear-gradient(90deg, #4facfe, #00f2fe);
+    }
+
+    .faster-section::before {
+      background: linear-gradient(90deg, #43e97b, #38f9d7);
+    }
+
+    .section-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 2rem;
+      padding-bottom: 1rem;
+      border-bottom: 2px solid rgba(0, 0, 0, 0.1);
+    }
+
+    .section-title {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      font-size: 1.5rem;
+      font-weight: 600;
+      color: #333;
+    }
+
+    .model-badge {
+      padding: 0.4rem 0.8rem;
+      border-radius: 20px;
+      font-size: 0.8rem;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: white;
+    }
+
+    .badge-yolo {
+      background: linear-gradient(45deg, #4facfe, #00f2fe);
+    }
+
+    .badge-faster {
+      background: linear-gradient(45deg, #43e97b, #38f9d7);
+    }
+
+    .images-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 0.75rem;
+    }
+
+    .image-container {
+      background: rgba(255, 255, 255, 0.9);
+      border-radius: 8px;
+      padding: 0.75rem;
+      box-shadow: 0 3px 10px rgba(0, 0, 0, 0.06);
+      transition: all 0.3s ease;
+    }
+
+    .image-container:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+    }
+
+    .image-title {
+      font-size: 0.8rem;
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+      color: #333;
+      display: flex;
+      align-items: center;
+      gap: 0.3rem;
+    }
+
+    .image-item {
+      width: 100%;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      transition: all 0.3s ease;
+      cursor: pointer;
+      overflow: hidden;
+    }
+
+    .image-item:hover {
+      transform: scale(1.02);
+    }
+
+    .image-item img {
+      width: 100%;
+      height: auto;
+      max-height: 100px;
+      object-fit: contain;
+      border-radius: 6px;
+      display: block;
+    }
+
+    .image-item video {
+      width: 100%;
+      height: auto;
+      max-height: 100px;
+      object-fit: contain;
+      border-radius: 6px;
+      background: #000;
+    }
+
+    .no-images {
+      grid-column: 1 / -1;
+      text-align: center;
+      padding: 3rem;
+      color: #666;
+      font-style: italic;
+    }
+
+    .image-description {
+      margin-top: 0.4rem;
+      font-size: 0.7rem;
+      color: #666;
+      line-height: 1.2;
+    }
+
+    .status-indicator {
+      display: inline-block;
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      margin-right: 0.5rem;
+    }
+
+    .status-success { background: #27ae60; }
+    .status-error { background: #e74c3c; }
+    .status-loading { background: #f39c12; animation: pulse 1s infinite; }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.5; }
+    }
+
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.8);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      z-index: 10000;
+      cursor: pointer;
+    }
+
+    .modal-image {
+      max-width: 90%;
+      max-height: 90%;
+      border-radius: 12px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+    }
+
+    @media (max-width: 768px) {
+      .main-container {
+        margin: 1rem;
+        padding: 1rem 1.5rem;
+      }
+      
+      .nav-buttons {
+        flex-direction: column;
+        align-items: center;
+      }
+      
+      .section-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
+      }
+      
+      .images-grid {
+        grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+        gap: 0.5rem;
+      }
+
+      .image-item img,
+      .image-item video {
+        max-height: 80px;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .images-grid {
+        grid-template-columns: repeat(3, 1fr);
+      }
+      
+      .image-item img,
+      .image-item video {
+        max-height: 60px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="modal-overlay" id="imageModal">
+    <img class="modal-image" id="modalImage" alt="Preview">
+  </div>
+
+  <div class="main-container">
+    <div class="header">
+      <h1>🎯 Risultati Training Models</h1>
+      <p>Visualizzazione dei test e performance delle reti neurali</p>
+    </div>
+
+    <div class="nav-buttons">
+      <button class="nav-btn" onclick="window.history.back()">
+        <i data-lucide="arrow-left"></i>
+        Torna Indietro
+      </button>
+      <button class="nav-btn secondary" onclick="refreshData()">
+        <i data-lucide="refresh-cw"></i>
+        Aggiorna Dati
+      </button>
+    </div>
+
+    <div class="model-section yolo-section" id="yolo-section">
+      <div class="section-header">
+        <div class="section-title">
+          <i data-lucide="zap"></i>
+          YOLO v12 Model Results
+          <span class="model-badge badge-yolo">Object Detection</span>
+        </div>
+        <div id="yolo-status">
+          <span class="status-indicator status-loading"></span>
+          Caricamento...
+        </div>
+      </div>
+
+      <div class="images-grid" id="yolo-images">
+        <div class="no-images">
+          <i data-lucide="image-off" style="width: 48px; height: 48px; margin-bottom: 1rem; opacity: 0.5;"></i>
+          <p>Caricamento immagini YOLO in corso...</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="model-section faster-section" id="faster-section">
+      <div class="section-header">
+        <div class="section-title">
+          <i data-lucide="rocket"></i>
+          Faster R-CNN Model Results
+          <span class="model-badge badge-faster">Region Proposal</span>
+        </div>
+        <div id="faster-status">
+          <span class="status-indicator status-loading"></span>
+          Caricamento...
+        </div>
+      </div>
+
+      <div class="images-grid" id="faster-images">
+        <div class="no-images">
+          <i data-lucide="image-off" style="width: 48px; height: 48px; margin-bottom: 1rem; opacity: 0.5;"></i>
+          <p>Caricamento immagini Faster R-CNN in corso...</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function updateStatus(elementId, status, message) {
+      const element = document.getElementById(elementId);
+      const statusClass = status === 'error' ? 'status-error' : 
+                         status === 'success' ? 'status-success' : 'status-loading';
+      element.innerHTML = `<span class="status-indicator ${statusClass}"></span>${message}`;
+    }
+
+    function initializeLucide() {
+      try {
+        if (window.lucide && window.lucide.createIcons) {
+          window.lucide.createIcons();
+          return true;
+        }
+        return false;
+      } catch (error) {
+        console.error('Errore inizializzazione Lucide:', error);
+        return false;
+      }
+    }
+
+    document.addEventListener("DOMContentLoaded", async () => {
+      initializeLucide();
+      
+      try {
+        await loadImages();
+      } catch (error) {
+        console.error('Errore durante il caricamento:', error);
+        showErrorMessage();
+      }
+    });
+
+    async function loadImages() {
+      try {
+        // Caricamento immagini YOLO
+        updateStatus('yolo-status', 'loading', 'Caricamento...');
+        
+        const yoloResponse = await fetch('/api/yolo-images/');
+        
+        if (!yoloResponse.ok) {
+          throw new Error(`YOLO API error: ${yoloResponse.status} ${yoloResponse.statusText}`);
+        }
+        
+        const yoloData = await yoloResponse.json();
+        
+        displayImages('yolo-images', yoloData.images, 'YOLO');
+        updateStatus('yolo-status', 'success', `${yoloData.images ? yoloData.images.length : 0} immagini caricate`);
+
+        // Caricamento immagini Faster R-CNN
+        updateStatus('faster-status', 'loading', 'Caricamento...');
+        
+        const fasterResponse = await fetch('/api/faster-images/');
+        
+        if (!fasterResponse.ok) {
+          throw new Error(`Faster R-CNN API error: ${fasterResponse.status} ${fasterResponse.statusText}`);
+        }
+        
+        const fasterData = await fasterResponse.json();
+        
+        displayImages('faster-images', fasterData.images, 'Faster R-CNN');
+        updateStatus('faster-status', 'success', `${fasterData.images ? fasterData.images.length : 0} immagini caricate`);
+
+      } catch (error) {
+        console.error('Errore durante il caricamento:', error);
+        updateStatus('yolo-status', 'error', 'Errore caricamento');
+        updateStatus('faster-status', 'error', 'Errore caricamento');
+        showPlaceholderContent();
+      }
+    }
+
+    function displayImages(containerId, images, modelName) {
+      const container = document.getElementById(containerId);
+      
+      if (!images || images.length === 0) {
+        container.innerHTML = `
+          <div class="no-images">
+            <i data-lucide="image-off" style="width: 48px; height: 48px; margin-bottom: 1rem; opacity: 0.5;"></i>
+            <p>Nessuna immagine disponibile per ${modelName}</p>
+          </div>
+        `;
+        initializeLucide();
+        return;
+      }
+      
+      container.innerHTML = images.map((image, index) => `
+        <div class="image-container">
+          <div class="image-title">
+            <i data-lucide="${image.type === 'video' ? 'video' : 'image'}"></i>
+            ${image.title || `Risultato ${index + 1}`}
+          </div>
+          <div class="image-item" onclick="openModal('${image.url}')">
+            ${image.type === 'video' ? 
+              `<video controls>
+                <source src="${image.url}" type="video/mp4">
+                Il tuo browser non supporta i video.
+               </video>` :
+              `<img src="${image.url}" alt="${image.title || 'Risultato'}" 
+                    loading="lazy" 
+                    onerror="this.onerror=null; this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjZjBmMGYwIi8+PHRleHQgeD0iNTAlIiB5PSI1MCUiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIxNCIgZmlsbD0iIzk5OSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iPkltbWFnaW5lIG5vbiBkaXNwb25pYmlsZTwvdGV4dD48L3N2Zz4='; this.alt='Immagine non disponibile';">`
+            }
+          </div>
+          ${image.description ? `<div class="image-description">${image.description}</div>` : ''}
+        </div>
+      `).join('');
+
+      initializeLucide();
+    }
+
+    function showPlaceholderContent() {
+      const yoloContainer = document.getElementById('yolo-images');
+      const fasterContainer = document.getElementById('faster-images');
+      
+      const placeholderContent = Array.from({length: 6}, (_, i) => `
+        <div class="image-container">
+          <div class="image-title">
+            <i data-lucide="image"></i>
+            Detection ${i + 1}
+          </div>
+          <div class="image-item">
+            <div style="width: 100%; height: auto; background: linear-gradient(45deg, #f0f0f0, #e0e0e0); border-radius: 8px; display: flex; align-items: center; justify-content: center; color: #666; min-height: 120px; aspect-ratio: 4/3;">
+              <div style="text-align: center;">
+                <i data-lucide="image" style="width: 32px; height: 32px; margin-bottom: 0.5rem;"></i>
+                <p style="font-size: 0.8rem;">Esempio ${i + 1}</p>
+              </div>
+            </div>
+          </div>
+          <div class="image-description">
+            Risultato di detection con bounding boxes.
+          </div>
+        </div>
+      `).join('');
+      
+      yoloContainer.innerHTML = placeholderContent;
+      fasterContainer.innerHTML = placeholderContent;
+      initializeLucide();
+    }
+
+    function showErrorMessage() {
+      const yoloContainer = document.getElementById('yolo-images');
+      const fasterContainer = document.getElementById('faster-images');
+      
+      const errorContent = `
+        <div class="no-images">
+          <i data-lucide="alert-circle" style="width: 48px; height: 48px; margin-bottom: 1rem; opacity: 0.5; color: #e74c3c;"></i>
+          <p>Errore nel caricamento delle immagini</p>
+        </div>
+      `;
+      
+      yoloContainer.innerHTML = errorContent;
+      fasterContainer.innerHTML = errorContent;
+      initializeLucide();
+    }
+
+    function openModal(imageSrc) {
+      const modal = document.getElementById('imageModal');
+      const modalImage = document.getElementById('modalImage');
+      
+      modalImage.src = imageSrc;
+      modal.style.display = 'flex';
+    }
+
+    document.getElementById('imageModal').addEventListener('click', function() {
+      this.style.display = 'none';
+    });
+
+    function refreshData() {
+      updateStatus('yolo-status', 'loading', 'Aggiornamento...');
+      updateStatus('faster-status', 'loading', 'Aggiornamento...');
+      loadImages();
+    }
+  </script>
+</body>
+</html>
